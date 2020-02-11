@@ -17,9 +17,6 @@ install_requires = [
     "click", "PyVCF"
 ]
 
-#dependency_links = [
-#    "git+ssh://git@bitbucket.org/helix-python.git#egg=helix-python"
-#]
 
 test_requirements = [
     'mock',
@@ -42,7 +39,6 @@ config = {
     'packages': find_packages(exclude=('tests',)),
     'include_package_data': True,
     'install_requires': install_requires,
-    'dependency_links': dependency_links,
     'zip_safe': False,
     'platforms': 'any',
     'entry_points': """
