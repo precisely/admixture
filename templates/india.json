@@ -1,6 +1,4 @@
 {
-  "plink": "plink",
-  "admixture": "admixture",
   "ref_ped": "data/IndiaReferenceCore4.bed",
   "ref_bim": "data/IndiaReferenceCore4.bim",
   "ref_fam": "data/IndiaReferenceCore4.fam",

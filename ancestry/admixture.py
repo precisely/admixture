@@ -66,7 +66,7 @@ def run(*args, **kwargs):
 
 
 def plink(*args, **kwargs):
-    cmd = ['plink'] + list(args)
+    cmd = ['plink1.9'] + list(args)
     try:
         proc = run(*cmd, **kwargs)
     except subprocess.CalledProcessError:
