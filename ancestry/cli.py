@@ -2,6 +2,7 @@ import json
 import logging
 import click
 from datetime import datetime
+import ancestry.admixture
 
 logger = logging.getLogger("ancestry")
 handler = logging.StreamHandler()
@@ -13,11 +14,11 @@ logger.setLevel(logging.DEBUG)
 
 
 @click.group()
-def ancestry():
+def admixture():
     pass
 
 
-@ancestry.command()
+@admixture.command()
 @click.option('-d', '--debug', is_flag=True,
               default=False, help='Enables debug mode.')
 @click.argument('user_id')
@@ -25,7 +26,7 @@ def ancestry():
 @click.argument('config_file', type=click.File('r'))
 @click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
 @click.argument('output', type=click.File('w'), default='-')
-def admix(debug, user_id, config_file, test_ped, output):
+def start(debug, user_id, config_file, test_ped, output):
     """
     #must make sure binaries for plink and admixture can be found by admixture.py
     Run admixture given the files and the k
@@ -46,7 +47,7 @@ def admix(debug, user_id, config_file, test_ped, output):
     json.dump(results, output, indent=2)
 
 
-@ancestry.command()
+@admixture.command()
 @click.option('-d', '--debug', is_flag=True,
               default=False, help='Enables debug mode.')
 # pop file created for admixture (see steps of admix in admixture.py
@@ -74,4 +75,4 @@ def cli():
     pass
 
 
-cli.add_command(ancestry)
+cli.add_command(admixture)
