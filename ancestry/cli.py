@@ -24,7 +24,7 @@ def admixture():
 # JSON file with the params listed below
 @click.argument('config_file', type=click.File('r'))
 @click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
-@click.argument('output', type=click.File('w'), default='-')
+@click.argument('output', type=click.File('w'), required=True)
 def start(debug, config_file, test_ped, output):
     """
     #must make sure binaries for plink and admixture can be found by admixture.py
