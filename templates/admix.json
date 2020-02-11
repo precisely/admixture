@@ -1,0 +1,8 @@
+{
+  "plink": "pathtobinary",
+  "admixture": "pathtobinary",
+  "ref_ped": "path",
+  "ref_bim": "path",
+  "ref_fam": "path",
+  "k": 1
+}
