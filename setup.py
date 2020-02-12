@@ -1,7 +1,7 @@
 """
 GENOMIX
 
-Genetics utility code for Insitome products
+Genetics utility code for Precisely products
 """
 import re
 from setuptools import setup, find_packages
