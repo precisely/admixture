@@ -98,7 +98,7 @@ def run_admix(params, test_ped):
 
 
     with cwd(os.path.dirname(os.path.abspath(test_prefix))):
-        plink("--bfile", ref_ped, "--write-snplist")
+        plink("--bfile", ref_prefix, "--write-snplist")
         plink("--vcf", test_ped, "--extract", "plink.snplist", "--make-bed", "--out", test_prefix)
 
         # plink merge test with refs
