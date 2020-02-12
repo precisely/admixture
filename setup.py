@@ -1,7 +1,7 @@
 """
-GENOMIX
+ANCESTRY
 
-Genetics utility code for Precisely products
+Genetics utility code for Precisely's Ancestry services
 """
 import re
 from setuptools import setup, find_packages
