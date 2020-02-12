@@ -124,7 +124,7 @@ def run_admix(params, test_ped):
         # ungenotyped loci
         plink("--bfile", out_prefix + ".NoMulti.merged", "--geno", "0.999", "--make-bed", "--out", out_prefix + ".NoMulti.merged.filtered")
 
-        if os.path.exists(out_prefix + ".NoMulti.merged..filtered.bed"):
+        if os.path.exists(out_prefix + ".NoMulti.merged.filtered.bed"):
             out_prefix = out_prefix + ".NoMulti.merged.filtered"
         else:
             raise RuntimeError(
