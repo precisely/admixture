@@ -223,6 +223,8 @@ def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
             try:
                 plink("--bfile", ref_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
                       ref_prefix + "NoMulti")
+                plink("--bfile", out_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
+                      out_prefix + ".NoMulti")
             except subprocess.CalledProcessError:
                 log.debug(
                     "Error attempting to remove missnp variants from {} and {}.".format(
@@ -239,6 +241,8 @@ def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
         try:
             plink("--bfile", ref_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
                   ref_prefix + "NoMulti")
+            plink("--bfile", out_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
+                  out_prefix + ".NoMulti")
         except subprocess.CalledProcessError:
             log.debug("Error attempting to remove missnp variants from {} and {}.".format(ref_prefix,
                                                                                           out_prefix + ".missnp"))
@@ -252,7 +256,7 @@ def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
     # sink the whole try
     log.debug("Starting a final merge attempt")
     try:
-        plink("--bfile", ref_prefix, "--bmerge", test_prefix, "--exclude", out_prefix + ".missnp",  "--out", out_prefix)
+        plink("--bfile", ref_prefix, "--bmerge", test_prefix,  "--out", out_prefix)
     except subprocess.CalledProcessError:
         log.debug("Error in the final merge on {} and {}".format(test_prefix, ref_prefix))
         raise
