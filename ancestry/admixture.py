@@ -122,14 +122,14 @@ def run_admix(params, test_ped):
 
         # a stage of filtering to make sure there aren't any completely
         # ungenotyped loci
-        plink("--bfile", out_prefix, "--geno", "0.999", "--make-bed", "--out", out_prefix + ".filtered")
+        plink("--bfile", out_prefix + ".NoMulti.merged", "--geno", "0.999", "--make-bed", "--out", out_prefix + ".NoMulti.merged.filtered")
 
-        if os.path.exists(out_prefix + ".filtered.bed"):
-            out_prefix = out_prefix + ".filtered"
+        if os.path.exists(out_prefix + ".NoMulti.merged..filtered.bed"):
+            out_prefix = out_prefix + ".NoMulti.merged.filtered"
         else:
             raise RuntimeError(
                 "Could not locate the filtered BED at {}".format(
-                    out_prefix + ".filtered.bed"))
+                    out_prefix + ".NoMulti.merged.filtered.bed"))
 
         # prepare the pop file for admixture by adding "_" to the test sample name
         # in the fam file may
@@ -256,7 +256,7 @@ def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
     # sink the whole try
     log.debug("Starting a final merge attempt")
     try:
-        plink("--bfile", ref_prefix, "--bmerge", test_prefix,  "--out", out_prefix)
+        plink("--bfile", ref_prefix, "--bmerge", out_prefix + ".NoMulti",  "--out", out_prefix + ".NoMulti.merged")
     except subprocess.CalledProcessError:
         log.debug("Error in the final merge on {} and {}".format(test_prefix, ref_prefix))
         raise
