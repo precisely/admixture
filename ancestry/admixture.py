@@ -140,7 +140,7 @@ def run_admix(params, test_ped, threads):
                     out_prefix + ".fam"))
 
         # begin admixture run
-        admixture("--supervised", out_prefix + ".bed", k, "-j", str(threads))
+        admixture("--supervised", out_prefix + ".bed", k, "-j"+str(threads))
 
     # catch for successful admixture run
     if os.path.exists(out_prefix + "." + k + "." + "Q"):
