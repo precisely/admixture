@@ -19,7 +19,7 @@ def admix_prep(params, test_ped):
 
     This will use the given file prefix to generate the inputs for ADMIXTURE supervised
 
-    - make ped file with incoming helix customer
+    - make ped file with incoming customer VCF
     - use plink to do the merge (it will handle triallelics and other errors)
     - if plink finds an error in the merge, remove the offending snp columns from BOTH the ref and test peds
     - try previous step until it works (possibly >50 removes)
