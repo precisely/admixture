@@ -24,10 +24,13 @@ def admixture():
 # JSON file with the params listed below
 @click.argument('config_file', type=click.File('r'))
 @click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
+@click.option('-t', '--threads', default=1)
 @click.argument('output', type=click.File('w'), required=True)
-def start(debug, config_file, test_ped, output):
+def start(debug, config_file, test_ped, threads, output):
     """
-    #must make sure binaries for plink and admixture can be found by admixture.py
+    The threading option affects supervised admixture subprocess ONLY
+
+    Must make sure binaries for plink and admixture can be found by admixture.py
     Run admixture given the files and the k
     The config file requires the following:
     {
@@ -40,7 +43,7 @@ def start(debug, config_file, test_ped, output):
     }
     """
     params = json.load(config_file)
-    admixture = ancestry.admixture.run_admix(params, test_ped)
+    admixture = ancestry.admixture.run_admix(params, test_ped, threads)
     results = ancestry.admixture.postprocess(
         admixture[0], admixture[1], admixture[2])
     json.dump(results, output, indent=2)

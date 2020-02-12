@@ -86,7 +86,7 @@ def admixture(*args, **kwargs):
 
 
 # perform merge of test and reference samples and run ADMIXTURE
-def run_admix(params, test_ped):
+def run_admix(params, test_ped, threads):
     # assign params to vars
     #ref_ped = get_data_filename(params['ref_ped'])
     ref_ped = params['ref_ped']
@@ -140,7 +140,7 @@ def run_admix(params, test_ped):
                     out_prefix + ".fam"))
 
         # begin admixture run
-        admixture("--supervised", out_prefix + ".bed", k)
+        admixture("--supervised", out_prefix + ".bed", k, "-j", threads)
 
     # catch for successful admixture run
     if os.path.exists(out_prefix + "." + k + "." + "Q"):
