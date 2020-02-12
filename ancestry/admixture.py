@@ -252,7 +252,7 @@ def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
     # sink the whole try
     log.debug("Starting a final merge attempt")
     try:
-        plink("--bfile", ref_prefix, "--bmerge", test_prefix, "--out", out_prefix)
+        plink("--bfile", ref_prefix, "--bmerge", test_prefix, "--exclude", out_prefix + ".missnp",  "--out", out_prefix)
     except subprocess.CalledProcessError:
         log.debug("Error in the final merge on {} and {}".format(test_prefix, ref_prefix))
         raise
