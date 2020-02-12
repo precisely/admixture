@@ -14,10 +14,15 @@ def get_version():
 
 
 install_requires = [
-    "click", "PyVCF"
+    "click==7.0",
+    "PyVCF==0.6.8",
+    "nose==1.3.7"
 ]
 
 
+# FIXME: Is this necessary? Since this won't be distributed as a separate app,
+# why not just combine all dependencies in install_requires? Also, `python
+# setup.py test` is apparently deprecated.
 test_requirements = [
     'mock',
     'pytest'
