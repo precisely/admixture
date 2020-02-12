@@ -170,7 +170,7 @@ def bim_check(name):
 
 
 def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
-    missnp_max = 500  # max number of allowed variants in missnp file
+    missnp_max = 5000  # max number of allowed variants in missnp file
     with open(missnp_file, 'r') as f:
         lines = sum(1 for _ in f)
 
