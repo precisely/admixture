@@ -52,7 +52,6 @@ def identify_test_sample(fam_file, sample_name):
         for line in f:
             line = re.sub('^'+sample_name, '_'+sample_name, line)
             o.write(line)
-            log.debug("Modified sample name at {}".format(line))
     o.close()
     if os.path.exists(pop_name):
         return True
@@ -96,6 +95,8 @@ def run_admix(params, test_ped, threads):
     test_prefix = re.sub('\..+', '', test_ped)
     ref_prefix = re.sub('\.bed', '', ref_ped)
     out_prefix = test_prefix + ".out"
+    sample_name = re.sub('\/.+\/', '', test_prefix)
+
 
 
     with cwd(os.path.dirname(os.path.abspath(test_prefix))):
@@ -134,9 +135,7 @@ def run_admix(params, test_ped, threads):
 
         # prepare the pop file for admixture by adding "_" to the test sample name
         # in the fam file may
-        print(out_prefix)
-        print(test_prefix)
-        pop_create = identify_test_sample(out_prefix + ".fam", test_prefix)
+        pop_create = identify_test_sample(out_prefix + ".fam", sample_name)
         if pop_create is False:
             raise RuntimeError(
                 "Failed to create popfile using {}".format(
