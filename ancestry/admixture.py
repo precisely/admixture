@@ -223,7 +223,7 @@ def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
             try:
                 plink("--bfile", ref_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
                       ref_prefix + "NoMulti")
-                plink("--bfile", out_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
+                plink("--bfile", test_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
                       out_prefix + ".NoMulti")
             except subprocess.CalledProcessError:
                 log.debug(
@@ -241,7 +241,7 @@ def process_missnp(missnp_file, ref_prefix, test_prefix, out_prefix):
         try:
             plink("--bfile", ref_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
                   ref_prefix + "NoMulti")
-            plink("--bfile", out_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
+            plink("--bfile", test_prefix, "--exclude", out_prefix + ".missnp", "--make-bed", "--out",
                   out_prefix + ".NoMulti")
         except subprocess.CalledProcessError:
             log.debug("Error attempting to remove missnp variants from {} and {}.".format(ref_prefix,
