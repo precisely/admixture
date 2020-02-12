@@ -37,4 +37,5 @@ The config file here follows the format described by templates/admix.json and po
 
 The test vcf is the sample you wish to find admixture for, and the filename prefix MUST match the sample name. This means that input VCFs here are single sample. For example: sample name "aneil" is in VCF named "aneil.vcf.gz"
 
+TODO: commadn for adding RSIDs to input vcf
 TODO: admixture pipeline incorporating subpop tests

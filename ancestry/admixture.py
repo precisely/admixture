@@ -96,8 +96,10 @@ def run_admix(params, test_ped):
     ref_prefix = re.sub('\.bed', '', ref_ped)
     out_prefix = test_prefix + ".out"
 
+
     with cwd(os.path.dirname(os.path.abspath(test_prefix))):
-        plink("--vcf", test_ped, "--make-bed", "--out", test_prefix)
+        plink("--bfile", ref_ped, "--write-snplist")
+        plink("--vcf", test_ped, "--extract", "plink.snplist", "--make-bed", "--out", test_prefix)
 
         # plink merge test with refs
         # first cycle will catch a whole lot of shit
