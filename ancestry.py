@@ -78,3 +78,6 @@ def cli():
 
 
 cli.add_command(admixture)
+
+if __name__ == '__main__':
+    cli()
