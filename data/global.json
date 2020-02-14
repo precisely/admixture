@@ -4,5 +4,5 @@
   "ref_ped": "data/GlobalMerge.bed",
   "ref_bim": "data/GlobalMerge.bim",
   "ref_fam": "data/GlobalMerge.fam",
-  "k": 64
+  "k": 62
 }

@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import subprocess
+from data.populations import POPULATIONS
 
 from ancestry import get_data_filename
 from ancestry.utils import cwd
@@ -12,6 +13,16 @@ log = logging.getLogger("ancestry")
 # for each population test. pop test names must match across functions and
 # output
 ruleset = {}
+
+
+def create_reference(poptest_name, global_prefix):
+    """
+
+    Use dict in populations.py to slice the necessary populations out of the Global bed defined by global_prefix
+    Input: name of pop test that matches populations.py, the prefix-only path to the bed file being sliced out of
+
+    """
+    pass
 
 
 def admix_prep(params, test_ped):
