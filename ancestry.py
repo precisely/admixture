@@ -174,7 +174,7 @@ def full(test_ped, threads, output):
     sample_name = re.sub('\/.+\/', '', test_prefix)
     prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge", sample_name)
     fullpath = os.path.abspath(prefix + ".bed")
-    path = os.path.split(fullpath)[0]
+    path = re.sub("\.bed", "", fullpath)
     params = {
         "ref_ped": path + ".bed",
         "ref_bim": path + ".bim",
