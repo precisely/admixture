@@ -192,7 +192,7 @@ def full(test_ped, threads, output):
     }
 
     for pop in to_do:
-        prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge")
+        prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge", sample_name)
         params = {
             "ref_ped": prefix + ".bed",
             "ref_bim": prefix + ".bim",
