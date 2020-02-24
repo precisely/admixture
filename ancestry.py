@@ -71,14 +71,16 @@ def postprocess(debug, pop, q, k, output):
 @admixture.command()
 @click.argument('global_admix', type=click.File('r'))
 @click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
+@click.option('-t', '--threads', default=1)
 @click.argument('output', type=click.File('w'), default='-')
-def subpopadmix(global_admix, test_ped, output):
+def subpopadmix(global_admix, test_ped, threads, output):
     """
     Determines what subpopulations need to be tested based on the admixture from global run (see admix command).
     The config file path for each subpopulation test are provided within this code.
 
     """
-
+    test_prefix = re.sub('\..+', '', test_ped)
+    sample_name = re.sub('\/.+\/', '', test_prefix)
     global_json = json.load(global_admix)
     to_do = ancestry.admixture.subpoptest(global_json)
     total_json = {
@@ -86,14 +88,14 @@ def subpopadmix(global_admix, test_ped, output):
     }
 
     for pop in to_do:
-        prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge")
+        prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge", sample_name)
         params = {
             "ref_ped": prefix + ".bed",
             "ref_bim": prefix + ".bim",
             "ref_fam": prefix + ".fam",
             "k": k
         }
-        preresults = ancestry.admixture.run_admix(params, test_ped)
+        preresults = ancestry.admixture.run_admix(params, test_ped, threads)
         results = ancestry.admixture.postprocess(
             preresults[0], preresults[1], preresults[2])
         total_json[pop] = results
@@ -114,16 +116,19 @@ def handleedges(debug, full_json, output):
 @admixture.command()
 @click.argument("poptest")
 @click.argument("global_prefix")
-def create_ref(poptest, global_prefix):
+@click.argument("sample_name")
+def create_ref(poptest, global_prefix, sample_name):
     """
     Use create_reference() to create a new bed/bim/fam group using the population defined by the poptest name.
     This name should match to POPULATIONS in populations.py
     """
-    prefix, k = ancestry.admixture.create_reference(poptest, global_prefix)
+    prefix, k = ancestry.admixture.create_reference(poptest, global_prefix, sample_name)
+    fullpath = os.path.abspath(prefix + ".bed")
+    path = re.sub("\.bed", "", fullpath)
     params = {
-        "ref_ped": prefix + ".bed",
-        "ref_bim": prefix + ".bim",
-        "ref_fam": prefix + ".fam",
+        "ref_ped": path + ".bed",
+        "ref_bim": path + ".bim",
+        "ref_fam": path + ".fam",
         "k": k
     }
     logger.debug(params)
@@ -199,7 +204,7 @@ def full(test_ped, threads, output):
             "ref_fam": prefix + ".fam",
             "k": k
         }
-        preresults = ancestry.admixture.run_admix(params, test_ped)
+        preresults = ancestry.admixture.run_admix(params, test_ped, threads)
         results = ancestry.admixture.postprocess(
             preresults[0], preresults[1], preresults[2])
         total_json[pop] = results
