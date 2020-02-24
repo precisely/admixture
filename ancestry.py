@@ -89,10 +89,12 @@ def subpopadmix(global_admix, test_ped, threads, output):
 
     for pop in to_do:
         prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge", sample_name)
+        fullpath = os.path.abspath(prefix + ".bed")
+        path = re.sub("\.bed", "", fullpath)
         params = {
-            "ref_ped": prefix + ".bed",
-            "ref_bim": prefix + ".bim",
-            "ref_fam": prefix + ".fam",
+            "ref_ped": path + ".bed",
+            "ref_bim": path + ".bim",
+            "ref_fam": path + ".fam",
             "k": k
         }
         preresults = ancestry.admixture.run_admix(params, test_ped, threads)
@@ -107,7 +109,7 @@ def subpopadmix(global_admix, test_ped, threads, output):
 # json file produced by subpopadmix
 @click.argument('full_json', type=click.File('r'))
 @click.argument('output', type=click.File('w'), default='-')
-def handleedges(debug, full_json, output):
+def handleedges(full_json, output):
     full_json = json.load(full_json)
     edged_json = ancestry.admixture.filters(full_json)
     json.dump(edged_json, output, indent=2)
@@ -202,10 +204,12 @@ def full(debug, test_ped, threads, output):
 
     for pop in to_do:
         prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge", sample_name)
+        fullpath = os.path.abspath(prefix + ".bed")
+        path = re.sub("\.bed", "", fullpath)
         params = {
-            "ref_ped": prefix + ".bed",
-            "ref_bim": prefix + ".bim",
-            "ref_fam": prefix + ".fam",
+            "ref_ped": path + ".bed",
+            "ref_bim": path + ".bim",
+            "ref_fam": path + ".fam",
             "k": k
         }
         preresults = ancestry.admixture.run_admix(params, test_ped, threads)
