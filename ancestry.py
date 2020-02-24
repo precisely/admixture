@@ -164,10 +164,11 @@ def init_global(test_ped, threads, output):
 
 
 @admixture.command()
+@click.option('-d', '--debug', is_flag=True, default=False, help='Enables intermediate JSON outputs.')
 @click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
 @click.option('-t', '--threads', default=1)
 @click.argument('output', type=click.File('w'), required=True)
-def full(test_ped, threads, output):
+def full(debug, test_ped, threads, output):
     """
     The full hierarchical ancestry caller for a given sample VCF.
 
@@ -190,6 +191,9 @@ def full(test_ped, threads, output):
     preresults = ancestry.admixture.run_admix(params, test_ped, threads)
     global_json = ancestry.admixture.postprocess(
         preresults[0], preresults[1], preresults[2])
+
+    if debug is True:
+        json.dump(global_json, open(test_ped + ".global.json", 'w'), indent=2)
 
     to_do = ancestry.admixture.subpoptest(global_json)
     total_json = {
