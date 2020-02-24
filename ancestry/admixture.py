@@ -426,44 +426,6 @@ def filters(full_json):
     Input JSON made by subpoptest, output json to dump
     """
 
-    # global containers
-    global_container = {
-        "asia": ["AA_Ref_Northeast_Asian", "AA_Ref_Austronesian", "AA_Ref_Southeast_Asian", "AA_Ref_South_Asian",
-                 "AA_Ref_Siberian", "AA_Ref_Central_Asian"],
-        "europe": ["AA_Ref_Ashkenazi", "AA_Ref_Basque", "AA_Ref_Western_European", "AA_Ref_Finnish",
-                   "AA_Ref_Eastern_European", "AA_Ref_Sardinian",
-                   "AA_Ref_North_Mediterranean"],
-        "africa": ["AA_Ref_Bantu", "AA_Ref_Central_African_HG", "AA_Ref_Khoisan", "AA_Ref_Nilotic",
-                   "AA_Ref_West_African"],
-        "mena": ["AA_Ref_Arabian", "AA_Ref_Levantine", "AA_Ref_Northwest_African", "AA_Ref_Caucasus"],
-        "oceania": ["AA_Ref_Oceanian"],
-        "americas": ["AA_Ref_North_American", "AA_Ref_Central_South_American", "AA_Ref_Amazonian"],
-        "south_asia": [],
-        "ashkenazi": []
-    }
-
-    # template for output based on app design
-    out_json = {
-        "asia": {},
-        "europe": {},
-        "africa": {},
-        "mena": {},
-        "oceania": {},
-        "americas": {},
-        "south_asia": {}
-    }
-
-    # ruleset for calculating gsum weights
-    gsum_ruleset = {
-        "asia": ["AA_Ref_Central_Asian", "AA_Ref_Northeast_Asian", "AA_Ref_Southeast_Asian"],
-        "europe": ["AA_Ref_Ashkenazi", "AA_Ref_Western_European", "AA_Ref_Sardinian"],
-        "africa": ["AA_Ref_West_African"],
-        "americas": ["AA_Ref_Central_South_American"],
-        "oceania": ["AA_Ref_Oceanian"],
-        "mena": ["AA_Ref_Arabian", "AA_Ref_Caucasus"],
-        "south_asia": ["AA_Ref_South_Asian"]
-    }
-
     # organize results as needed for app. search oceania and south asian
     # differently. Oceania attempts to pull first from any oceanian test, and
     # then from asia if its not present.
@@ -506,71 +468,7 @@ def filters(full_json):
     has_oceania = 0
     has_asia = 0
     has_europe = 0
-    for group, pops in global_container.items():
-        if group != "south_asia" and group != "oceania" and group != "ashkenazi":
-            for pop in pops:
-                if group in full_json:
-                    try:
-                        out_json[group][pop] = float(full_json[group][pop])
-                    except BaseException:
-                        raise RuntimeError(
-                            "Could not find {} in results".format(pop))
-                else:
-                    out_json[group][pop] = 0.0
-        elif group == "south_asia":
-            if "asia" in full_json:
-                has_asia = 1
-                try:
-                    out_json["south_asia"]["AA_Ref_South_Asian"] = float(
-                        full_json["asia"]["AA_Ref_South_Asian"])
-                except BaseException:
-                    raise RuntimeError(
-                        "Could not find {} in results, when adding from asia to south_asia.".format(
-                            "AA_Ref_South_Asian"))
-            else:
-                # if there was no asian test present, then assign the value
-                # from the global test
-                out_json["south_asia"]["AA_Ref_South_Asian"] = float(
-                    global_from_json["AA_Ref_South_Asian"])
 
-        elif group == "oceania":
-            if "oceania" in full_json:
-                has_oceania = 1
-                try:
-                    out_json["oceania"]["AA_Ref_Oceanian"] = float(
-                        full_json["oceania"]["AA_Ref_Oceanian"])
-                except BaseException:
-                    raise RuntimeError(
-                        "Could not find {} in results, when adding from oceania to oceania.".format("AA_Ref_Oceanian"))
-            elif "asia" in full_json:
-                has_asia = 1
-                try:
-                    out_json["oceania"]["AA_Ref_Oceanian"] = float(
-                        full_json["asia"]["AA_Ref_Oceanian"])
-                except BaseException:
-                    raise RuntimeError(
-                        "Could not find {} in results, when adding from asia to oceania.".format("AA_Ref_Oceanian"))
-            else:
-                # if there was no asian test present, then assign the value
-                # from the global test
-                out_json["oceania"]["AA_Ref_Oceanian"] = float(
-                    global_from_json["AA_Ref_Oceanian"])
-
-        elif group == "ashkenazi":
-            if "europe" in full_json:
-                has_europe = 1
-                try:
-                    out_json["europe"]["AA_Ref_Ashkenazi"] = float(
-                        full_json["europe"]["AA_Ref_Ashkenazi"]
-                    )
-                except BaseException:
-                    raise RuntimeError(
-                        "Could not find ashkenazi in european results"
-                    )
-            else:
-                out_json["europe"]["AA_Ref_Ashkenazi"] = float(
-                    global_from_json["AA_Ref_Ashkenazi"]
-                )
 
     # now that results are structured in correct population groups, we need to first make each sub group sum to 1.0
     # because we are taking subsets of each test
@@ -681,7 +579,6 @@ def filters(full_json):
     for pop, val in final_json.items():
         final_json[pop] = (val / denom) * 100
 
-    # monica is pretty
 
     # fix the pop names by removing AA_Ref
 

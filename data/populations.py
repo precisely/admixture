@@ -180,6 +180,6 @@ POPULATIONS = {
             "AA_Ref_BengalBrahmin",
             "AA_Ref_GujBrahmin",
         ],
-        "k": 34
+        "k": 36
     }
 }
