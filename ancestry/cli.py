@@ -50,6 +50,58 @@ def single(config_file, test_ped, threads, output):
 
 
 @admixture.command()
+@click.argument('global_admix', type=click.File('r'))
+@click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
+@click.argument('output', type=click.File('w'), default='-')
+def subpopadmix(global_admix, test_ped, output):
+    """
+    Determines what subpopulations need to be tested based on the admixture from global run (see admix command).
+    The config file path for each subpopulation test are provided within this code.
+
+    """
+
+    global_json = json.load(global_admix)
+    to_do = ancestry.admixture.subpoptest(global_json)
+    total_json = {
+        "global": global_json
+    }
+
+    for pop in to_do:
+        params = json.load(open(testpops[pop], 'r'))
+        admixture = ancestry.admixture.run_admix(params, test_ped)
+        results = ancestry.admixture.postprocess(
+            admixture[0], admixture[1], admixture[2])
+        total_json[pop] = results
+
+    json.dump(total_json, output, indent=2)
+
+
+@admixture.command()
+@click.option('-d', '--debug', is_flag=True,
+              default=False, help='Enables debug mode.')
+# json file produced by subpopadmix
+@click.argument('full_json', type=click.File('r'))
+@click.argument('output', type=click.File('w'), default='-')
+def handleedges(debug, full_json, output):
+    full_json = json.load(full_json)
+    edged_json = genomix.admixture.filters(full_json)
+    json.dump(edged_json, output, indent=2)
+
+
+
+
+@admixture.command()
+@click.argument("poptest")
+@click.argument("global_prefix")
+def create_ref(poptest, global_prefix):
+    """
+    Use create_reference() to create a new bed/bim/fam group using the population defined by the poptest name.
+    This name should match to POPULATIONS in populations.py
+    """
+    pass
+
+
+@admixture.command()
 @click.option('-d', '--debug', is_flag=True,
               default=False, help='Enables debug mode.')
 # pop file created for admixture (see steps of admix in admixture.py
