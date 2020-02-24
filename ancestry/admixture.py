@@ -9,11 +9,32 @@ from ancestry.utils import cwd
 
 log = logging.getLogger("ancestry")
 
-# rules determining threshold sums and included populaitons for that sum
+# rules determining threshold sums and included populations for that sum
 # for each population test. pop test names must match across functions and
 # output
-ruleset = {}
+ruleset = {
+    "africa": {
+        "threshold": 0.02,
+        "populations": ["AA_Ref_African"]
+    },
+    "america": {
+        "threshold": 0.05,
+        "populations": ["AA_Ref_Amerindian"]
+    },
+    "eastasia": {
+        "threshold": 0.03,
+        "populations": ["AA_Ref_EastAsian"]
+    },
+    "southasia": {
+        "threshold": 0.25,
+        "populations": ["AA_Ref_SouthAsian"]
+    },
+    "europe": {
+        "threshold": 0.10,
+        "populations": ["AA_Ref_NorthernEuropean", "AA_Ref_SouthernEuropean"]
+    }
 
+}
 
 
 def admix_prep(params, test_ped):
@@ -68,7 +89,7 @@ def run(*args, **kwargs):
 
 
 def plink(*args, **kwargs):
-    cmd = ['plink1.9'] + list(args)
+    cmd = ['plink'] + list(args)
     try:
         proc = run(*cmd, **kwargs)
     except subprocess.CalledProcessError:
@@ -104,13 +125,14 @@ def create_reference(poptest_name, global_prefix):
 
     try:
         plink("--bfile", global_prefix, "--make-bed", "--keep-fam", "keeper.txt", "--out",
-              global_prefix + ".poptest_name")
+              global_prefix + "." + poptest_name)
     except subprocess.CalledProcessError:
         log.debug("Error in creating new reference.")
         raise
 
-    output_prefix = global_prefix + ".poptest_name"
-    return output_prefix
+    output_prefix = global_prefix + "." + poptest_name
+    return output_prefix, int(k)
+
 
 # perform merge of test and reference samples and run ADMIXTURE
 def run_admix(params, test_ped, threads):
@@ -376,10 +398,7 @@ def subpoptest(global_admix):
 
     for test, pops in ruleset.items():
         summer = 0.0
-        if test == "ashkenazi":
-            continue
 
-        # noinspection PyTypeChecker
         for pop in pops['populations']:
             try:
                 admix = float(global_admix[pop])
@@ -397,15 +416,8 @@ def subpoptest(global_admix):
         log.debug("Returning the following tests: {}".format(to_do))
         return to_do
     elif len(to_do) == 0:
-        # This method runs every test for people who had no matching sub tests, however in the new model because
-        # below threshold is 0 we will just 0 if no tests can be found
-
-        # log.debug("No tests passed the given rulesets. Running every test")
-        # to_do=["asia","europe","africa","americas","oceania","mena"]
-        log.debug("NO SUBPOPULATION TESTS MATCH. You may want to inspect this sample manually")
+        log.debug("NO SUBPOPULATION TESTS MATCH. You may want to inspect this sample manually!")
         return to_do
-        # raise RuntimeError(
-        #    "No tests could be found for the results. Please examine manually.")
 
 
 def filters(full_json):

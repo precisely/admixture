@@ -12,7 +12,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
-
 @click.group()
 def admixture():
     pass
@@ -66,10 +65,68 @@ def postprocess(debug, pop, q, k, output):
     ADMIXTURE (for the same sample set). You can generate this files by running "ancestry admix"
     """
     results = ancestry.admixture.postprocess(pop, q, k)
-    print(results)
+    logger.debug(results)
 
 
+@admixture.command()
+@click.argument('global_admix', type=click.File('r'))
+@click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
+@click.argument('output', type=click.File('w'), default='-')
+def subpopadmix(global_admix, test_ped, output):
+    """
+    Determines what subpopulations need to be tested based on the admixture from global run (see admix command).
+    The config file path for each subpopulation test are provided within this code.
 
+    """
+
+    global_json = json.load(global_admix)
+    to_do = ancestry.admixture.subpoptest(global_json)
+    total_json = {
+        "global": global_json
+    }
+
+    for pop in to_do:
+        prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge")
+        params = {
+            "ref_ped": prefix + ".bed",
+            "ref_bim": prefix + ".bim",
+            "ref_fam": prefix + ".fam",
+            "k": k
+        }
+        preresults = ancestry.admixture.run_admix(params, test_ped)
+        results = ancestry.admixture.postprocess(
+            preresults[0], preresults[1], preresults[2])
+        total_json[pop] = results
+
+    json.dump(total_json, output, indent=2)
+
+
+@admixture.command()
+# json file produced by subpopadmix
+@click.argument('full_json', type=click.File('r'))
+@click.argument('output', type=click.File('w'), default='-')
+def handleedges(debug, full_json, output):
+    full_json = json.load(full_json)
+    edged_json = ancestry.admixture.filters(full_json)
+    json.dump(edged_json, output, indent=2)
+
+
+@admixture.command()
+@click.argument("poptest")
+@click.argument("global_prefix")
+def create_ref(poptest, global_prefix):
+    """
+    Use create_reference() to create a new bed/bim/fam group using the population defined by the poptest name.
+    This name should match to POPULATIONS in populations.py
+    """
+    prefix, k = ancestry.admixture.create_reference(poptest, global_prefix)
+    params = {
+        "ref_ped": prefix + ".bed",
+        "ref_bim": prefix + ".bim",
+        "ref_fam": prefix + ".fam",
+        "k": k
+    }
+    logger.debug(params)
 
 
 @click.group()

@@ -3,6 +3,7 @@ import logging
 import click
 from datetime import datetime
 import ancestry.admixture
+from .admixture import POPULATIONS
 
 logger = logging.getLogger("ancestry")
 handler = logging.StreamHandler()
@@ -67,10 +68,16 @@ def subpopadmix(global_admix, test_ped, output):
     }
 
     for pop in to_do:
-        params = json.load(open(testpops[pop], 'r'))
-        admixture = ancestry.admixture.run_admix(params, test_ped)
+        prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge")
+        params = {
+            "ref_ped": prefix + ".bed",
+            "ref_bim": prefix + ".bim",
+            "ref_fam": prefix + ".fam",
+            "k": k
+        }
+        preresults = ancestry.admixture.run_admix(params, test_ped)
         results = ancestry.admixture.postprocess(
-            admixture[0], admixture[1], admixture[2])
+            preresults[0], preresults[1], preresults[2])
         total_json[pop] = results
 
     json.dump(total_json, output, indent=2)
@@ -84,10 +91,8 @@ def subpopadmix(global_admix, test_ped, output):
 @click.argument('output', type=click.File('w'), default='-')
 def handleedges(debug, full_json, output):
     full_json = json.load(full_json)
-    edged_json = genomix.admixture.filters(full_json)
+    edged_json = ancestry.admixture.filters(full_json)
     json.dump(edged_json, output, indent=2)
-
-
 
 
 @admixture.command()
@@ -98,7 +103,14 @@ def create_ref(poptest, global_prefix):
     Use create_reference() to create a new bed/bim/fam group using the population defined by the poptest name.
     This name should match to POPULATIONS in populations.py
     """
-    pass
+    prefix, k = ancestry.admixture.create_reference(poptest, global_prefix)
+    params = {
+        "ref_ped": prefix + ".bed",
+        "ref_bim": prefix + ".bim",
+        "ref_fam": prefix + ".fam",
+        "k": k
+    }
+    print(params)
 
 
 @admixture.command()
@@ -119,9 +131,6 @@ def postprocess(debug, pop, q, k, output):
     """
     results = ancestry.admixture.postprocess(pop, q, k)
     print(results)
-
-
-
 
 
 @click.group()

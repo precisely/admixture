@@ -106,7 +106,7 @@ POPULATIONS = {
         ],
         "k": 5
     },
-    "india": {
+    "southasia": {
         "pops": [
             "AA_Ref_AndamanIsland",
             "AA_Ref_Baloch",
