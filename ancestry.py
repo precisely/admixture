@@ -2,6 +2,7 @@ import json
 import logging
 import click
 import os
+import re
 from datetime import datetime
 import ancestry.admixture
 
@@ -139,7 +140,9 @@ def init_global(test_ped, threads, output):
 
     TEST SAMPLE NAME MUST BE THE SAME AS SAMPLE FILENAME
     """
-    prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge")
+    test_prefix = re.sub('\..+', '', test_ped)
+    sample_name = re.sub('\/.+\/', '', test_prefix)
+    prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge", sample_name)
     fullpath = os.path.abspath(prefix + ".bed")
     path = os.path.split(fullpath)[0]
     params = {
@@ -167,7 +170,9 @@ def full(test_ped, threads, output):
 
     The threading option affects supervised admixture subprocess ONLY
     """
-    prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge")
+    test_prefix = re.sub('\..+', '', test_ped)
+    sample_name = re.sub('\/.+\/', '', test_prefix)
+    prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge", sample_name)
     fullpath = os.path.abspath(prefix + ".bed")
     path = os.path.split(fullpath)[0]
     params = {
