@@ -18,8 +18,6 @@ def admixture():
 
 
 @admixture.command()
-@click.option('-d', '--debug', is_flag=True,
-              default=False, help='Enables debug mode.')
 # JSON file with the params listed below
 @click.argument('config_file', type=click.File('r'))
 @click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
@@ -127,6 +125,29 @@ def create_ref(poptest, global_prefix):
         "k": k
     }
     logger.debug(params)
+
+
+@admixture.command()
+@click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
+@click.option('-t', '--threads', default=1)
+@click.argument('output', type=click.File('w'), required=True)
+def init_global(test_ped, threads, output):
+    """
+    Use create_reference() to create a new bed/bim/fam group using the population defined by the poptest name.
+    This name should match to POPULATIONS in populations.py
+    """
+    prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge")
+    params = {
+        "ref_ped": prefix + ".bed",
+        "ref_bim": prefix + ".bim",
+        "ref_fam": prefix + ".fam",
+        "k": k
+    }
+    logger.debug(params)
+    preresults = ancestry.admixture.run_admix(params, test_ped, threads)
+    results = ancestry.admixture.postprocess(
+        preresults[0], preresults[1], preresults[2])
+    json.dump(results, output, indent=2)
 
 
 @click.group()
