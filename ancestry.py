@@ -1,6 +1,7 @@
 import json
 import logging
 import click
+import os
 from datetime import datetime
 import ancestry.admixture
 
@@ -137,10 +138,11 @@ def init_global(test_ped, threads, output):
     This name should match to POPULATIONS in populations.py
     """
     prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge")
+    path = os.path.abspath(prefix + ".bed")
     params = {
-        "ref_ped": prefix + ".bed",
-        "ref_bim": prefix + ".bim",
-        "ref_fam": prefix + ".fam",
+        "ref_ped": path + ".bed",
+        "ref_bim": path + ".bim",
+        "ref_fam": path + ".fam",
         "k": k
     }
     logger.debug(params)
