@@ -108,7 +108,7 @@ def admixture(*args, **kwargs):
     return proc.stdout
 
 
-def create_reference(poptest_name, global_prefix):
+def create_reference(poptest_name, global_prefix, sample):
     """
 
     Use dict in populations.py to slice the necessary populations out of the Global bed defined by global_prefix
@@ -125,12 +125,12 @@ def create_reference(poptest_name, global_prefix):
 
     try:
         plink("--bfile", global_prefix, "--make-bed", "--keep-fam", "keeper.txt", "--out",
-              global_prefix + "." + poptest_name)
+              global_prefix + "." + poptest_name + "." + sample)
     except subprocess.CalledProcessError:
         log.debug("Error in creating new reference.")
         raise
 
-    output_prefix = global_prefix + "." + poptest_name
+    output_prefix = global_prefix + "." + poptest_name + "." + sample
     return output_prefix, int(k)
 
 

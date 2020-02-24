@@ -136,9 +136,12 @@ def init_global(test_ped, threads, output):
     """
     Use create_reference() to create a new bed/bim/fam group using the population defined by the poptest name.
     This name should match to POPULATIONS in populations.py
+
+    TEST SAMPLE NAME MUST BE THE SAME AS SAMPLE FILENAME
     """
     prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge")
-    path = os.path.abspath(prefix + ".bed")
+    fullpath = os.path.abspath(prefix + ".bed")
+    path = os.path.split(fullpath)[0]
     params = {
         "ref_ped": path + ".bed",
         "ref_bim": path + ".bim",
@@ -151,6 +154,52 @@ def init_global(test_ped, threads, output):
         preresults[0], preresults[1], preresults[2])
     json.dump(results, output, indent=2)
 
+
+@admixture.command()
+@click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
+@click.option('-t', '--threads', default=1)
+@click.argument('output', type=click.File('w'), required=True)
+def full(test_ped, threads, output):
+    """
+    The full heirarchical ancestry caller for a given sample VCF.
+
+    TEST SAMPLE NAME MUST BE THE SAME AS SAMPLE FILENAME.
+
+    The threading option affects supervised admixture subprocess ONLY
+    """
+    prefix, k = ancestry.admixture.create_reference("global", "data/GlobalMerge")
+    fullpath = os.path.abspath(prefix + ".bed")
+    path = os.path.split(fullpath)[0]
+    params = {
+        "ref_ped": path + ".bed",
+        "ref_bim": path + ".bim",
+        "ref_fam": path + ".fam",
+        "k": k
+    }
+    logger.debug(params)
+    preresults = ancestry.admixture.run_admix(params, test_ped, threads)
+    global_json = ancestry.admixture.postprocess(
+        preresults[0], preresults[1], preresults[2])
+
+    to_do = ancestry.admixture.subpoptest(global_json)
+    total_json = {
+        "global": global_json
+    }
+
+    for pop in to_do:
+        prefix, k = ancestry.admixture.create_reference(pop, "data/GlobalMerge")
+        params = {
+            "ref_ped": prefix + ".bed",
+            "ref_bim": prefix + ".bim",
+            "ref_fam": prefix + ".fam",
+            "k": k
+        }
+        preresults = ancestry.admixture.run_admix(params, test_ped)
+        results = ancestry.admixture.postprocess(
+            preresults[0], preresults[1], preresults[2])
+        total_json[pop] = results
+
+    json.dump(total_json, output, indent=2)
 
 @click.group()
 def cli():
