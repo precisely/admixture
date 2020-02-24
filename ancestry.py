@@ -219,6 +219,7 @@ def full(debug, test_ped, threads, output):
 
     json.dump(total_json, output, indent=2)
 
+
 @click.group()
 def cli():
     pass
