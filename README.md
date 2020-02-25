@@ -23,27 +23,43 @@ $ deactivate
 
 ## Installation
 
-The go to the top level of the code (with the setup.py file), and run:
+The go to the top level of the code (with the requirements.txt file), and run:
 ```
-pip install .
+$ pip install -r requirements.txt
 ```
 
-This should now make the command `ancestry` available to you via the command line.
+Running the following, should now produce a help output:
+```
+$ python ancestry.py admixture --help
+```
 
 
 ## Running
 
 A single, starter admixture run on a VCF can be performed with:
 ```
-$ ancestry admixture start CONFIG_FILE TEST_VCF OUTPUT
+$ python ancestry.py admixture start CONFIG_FILE TEST_VCF OUTPUT
 ```
 
 The config file here follows the format described by templates/admix.json and points to populations to use.
 
 The test vcf is the sample you wish to find admixture for, and the filename prefix MUST match the sample name. This means that input VCFs here are single sample. For example: sample name "aneil" is in VCF named "aneil.vcf.gz"
 
-TODO: commadn for adding RSIDs to input vcf
-TODO: admixture pipeline incorporating subpop tests
+
+To run the full hierarchical admixture pipeline, use this:
+```
+$ python ancestry.py admixture full -d -t 36 /path/to/input.vcf.gz /path/to/output.json
+```
+
+The -d flag will create JSON dumps of intermediate admixtures as the subpopulation tests are completed. The -t flag, for threads, indicates the amount of threads to use when computing admixtures.
+
+An example of a real command used for a 1x Gencove imputed VCF:
+
+```
+$ python ancestry.py admixture full -d -t 36 /scratch/giab/aneil/1x/aneil/78a75379-db2b-4beb-ab0e-539ab0293492/aneil.vcf.gz /scratch/giab/aneil/1x/aneil/78a75379-db2b-4beb-ab0e-539ab0293492/aneil.out.json
+```
+
+
 
 
 ## Tests
