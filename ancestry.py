@@ -172,7 +172,7 @@ def init_global(test_ped, threads, output):
 @click.argument('output', type=click.File('w'), required=True)
 def full(debug, test_ped, threads, output):
     """
-    The full hierarchical ancestry caller for a given sample VCF.
+    The full hierarchical ancestry caller for a given sample VCF. OUTPUT is the prefix
 
     TEST SAMPLE NAME MUST BE THE SAME AS SAMPLE FILENAME.
 
@@ -218,10 +218,10 @@ def full(debug, test_ped, threads, output):
         total_json[pop] = results
 
     if debug is True:
-        json.dump(total_json, output, indent=2)
+        json.dump(total_json, output + ".subpops.json" , indent=2)
 
     final_json = ancestry.admixture.filters(total_json)
-    json.dump(final_json, output, indent=2)
+    json.dump(final_json, output + ".final.json", indent=2)
 
 
 @click.group()
