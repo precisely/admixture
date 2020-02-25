@@ -217,11 +217,11 @@ def full(debug, test_ped, threads, output):
             preresults[0], preresults[1], preresults[2])
         total_json[pop] = results
 
-    json.dump(total_json, output, indent=2)
+    if debug is True:
+        json.dump(total_json, output, indent=2)
 
-
-
-
+    final_json = ancestry.admixture.filters(total_json)
+    json.dump(final_json, output, indent=2)
 
 
 @click.group()

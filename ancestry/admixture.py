@@ -444,7 +444,6 @@ def filters(full_json):
     #Zero'ing out pops that did not trigger their subtest. Also create a total denominator for readjusting nonzerod
     # oceanians get zero'd by this threshold
     global_denom = 0.0
-
     if float(full_json["global"]["AA_Ref_Oceanian"]) <= 0.02:
         out_json["AA_Ref_Oceanian"] = 0.0
     else:
@@ -475,10 +474,9 @@ def filters(full_json):
         else:
             for pop in values["core"]:
                 if pop in full_json[group]:
-                    out_json[pop] = float(full_json[group][pop]) / gsum_rules[group]
+                    out_json[pop] = float(full_json[group][pop]) * gsum_rules[group]
                 else:
                     out_json[pop] = 0.0
-
 
     #applying some final formatting adjustments to the output and creating true percentages
     final_json = {}
