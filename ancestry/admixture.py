@@ -424,163 +424,67 @@ def filters(full_json):
     """
     Define edge cases for ancestry tests, and re-process results to fit them
     Input JSON made by subpoptest, output json to dump
-    """
 
-    # organize results as needed for app. search oceania and south asian
-    # differently. Oceania attempts to pull first from any oceanian test, and
-    # then from asia if its not present.
+    FILTERS HERE INCLUDE OCEANIAN ZERO THRESHOLD
+    EXPECTS CORE POPULATIONS TO HAVE UNIQUE NAMES WITH NO OVERLAP BETWEEN SUBPOP TESTS
+    """
     log.debug("Beginning filtering and edge case handling.")
 
-    # readjust global percentages based on threshold ruleset before processing
-    # subgroup weights
-    log.debug("Adjusting global percentages based on thresholds before processing")
-    for group, rules in ruleset.items():
-        summer = 0.0
-        for rule in rules["populations"]:
-            try:
-                admix = float(full_json["global"][rule])
-            except BaseException:
-                raise RuntimeError(
-                    "Unable to find admixture for {} in global populations".format(rule))
-            summer += admix
-        if summer >= rules["threshold"]:
-            # special rule to re-weight ashkenazi if above zero threshold and below an adjustment threshold
-            if group == "ashkenazi" and float(full_json["global"]["AA_Ref_Ashkenazi"]) <= 0.35:
-                full_json["global"]["AA_Ref_Ashkenazi"] = float(full_json["global"]["AA_Ref_Ashkenazi"]) * 0.67
-            continue
+    out_json = {}
+
+    #the global proportions which will be used to adjust the subpop proportions
+    gsum_rules = {
+        "africa": float(full_json["global"]["AA_Ref_African"]),
+        "america": float(full_json["global"]["AA_Ref_Amerindian"]),
+        "europe": float(full_json["global"]["AA_Ref_NorthernEuropean"]) + float(full_json["global"]["AA_Ref_SouthernEuropean"]),
+        "eastasia": float(full_json["global"]["AA_Ref_EastAsian"]),
+        "southasia": float(full_json["global"]["AA_Ref_SouthAsian"])
+    }
+
+    #Zero'ing out pops that did not trigger their subtest. Also create a total denominator for readjusting nonzerod
+    # oceanians get zero'd by this threshold
+    global_denom = 0.0
+
+    if float(full_json["global"]["AA_Ref_Oceanian"]) <= 0.02:
+        out_json["AA_Ref_Oceanian"] = 0.0
+    else:
+        out_json["AA_Ref_Oceanian"] = float(full_json["global"]["AA_Ref_Oceanian"])
+        global_denom += float(full_json["global"]["AA_Ref_Oceanian"])
+
+    for group, values in gsum_rules.items():
+        if group not in full_json.keys():
+            gsum_rules[group] = 0.0
         else:
-            # zero in global only
-            for p in rules["populations"]:
-                full_json["global"][p] = 0.0
-    # redistribute global percentages so they add up to 1.0 again
-    log.debug("Redistributing global percentages")
-    tosum = list(float(x) for x in full_json["global"].values())
-    denom = sum(tosum)
-    for pop in full_json["global"]:
-        full_json["global"][pop] = float(full_json["global"][pop]) / denom
+            global_denom += gsum_rules[group]
 
-    # holds the global results from the input JSON we will use to adjust
-    # subpop percentages
-    global_from_json = full_json["global"]
+    #Now apply the new global_denom to adjust
+    for group, values in gsum_rules.items():
+        gsum_rules[group] = gsum_rules[group] / global_denom
 
-    # determine where to place south asian and oceanian admix values,
-    # depending on presence of asia test
-    has_oceania = 0
-    has_asia = 0
-    has_europe = 0
+    log.debug("Adjusted subpop percentage totals are {}".format(gsum_rules))
 
+    for group, values in POPULATIONS.items():
+        gsum = 0
 
-    # now that results are structured in correct population groups, we need to first make each sub group sum to 1.0
-    # because we are taking subsets of each test
-    # and then normalize each population by the total of their population
-    # container defined by the ruleset
-    log.debug("Adjusting subgroups to fit container and normalizing by globals")
-    for group, pops in out_json.items():
-        gsum = 0.0
-        gpops = gsum_ruleset[group]
-
-        # exception: if there is an oceanian test, make sure you normalize
-        # using the oceanion populations, not asian
-        if group == "oceania" and has_oceania == 1:
-            gsum = float(global_from_json["AA_Ref_Oceanian"])
-            # out_json is filtered for only "in group" pops, so its fine to sum
-            # here
-            psum = sum(out_json[group].values())
-            log.debug("Oceanian edge case value={} group={} pop={} Psum={} Gsum={} ".format(
-                out_json[group]["AA_Ref_Oceanian"], group, "AA_Ref_Oceanian", psum, gsum))
-            if psum * gsum != 0.0:
-                out_json[group]["AA_Ref_Oceanian"] = (float(
-                    out_json[group]["AA_Ref_Oceanian"]) * gsum) / psum
-            else:
-                out_json[group]["AA_Ref_Oceanian"] = 0.0
+        if group == "global":
             continue
 
-        # if there is no oceanian test, normalize oceania with asia
-        if group == "oceania" and has_oceania == 0 and has_asia == 1:
-            gpops = gsum_ruleset["asia"]
-            for gpop in gpops:
-                gsum += float(global_from_json[gpop])
-            psum = sum(out_json["asia"].values())
-            log.debug(
-                "Oceanian with-asia edge case value={} group={} pop={} Psum={} Gsum={} ".format(
-                    out_json[group]["AA_Ref_Oceanian"],
-                    group,
-                    "AA_Ref_Oceanian",
-                    psum,
-                    gsum))
-            if psum * gsum != 0.0:
-                out_json[group]["AA_Ref_Oceanian"] = (float(
-                    out_json[group]["AA_Ref_Oceanian"]) * gsum) / psum
-            else:
-                out_json[group]["AA_Ref_Oceanian"] = 0.0
-            continue
+        if group not in full_json.keys():
+            for pop in values["core"]:
+                out_json[pop] = 0.0
+        else:
+            for pop in values["core"]:
+                if pop in full_json[group]:
+                    out_json[pop] = float(full_json[group][pop]) / gsum_rules[group]
+                else:
+                    out_json[pop] = 0.0
 
-        # if no asia test, just use the global oceania pop
-        if group == "oceania" and has_asia == 0 and has_oceania == 0:
-            out_json[group]["AA_Ref_Oceanian"] = global_from_json["AA_Ref_Oceanian"]
-            continue
 
-        # if there is asian test, for south asia use that test to normalize
-        if group == "south_asia" and has_asia == 1:
-            gpops = gsum_ruleset["asia"]
-            for gpop in gpops:
-                gsum += float(global_from_json[gpop])
-            psum = sum(out_json["asia"].values())
-            log.debug(
-                "South asian with-asia edge case value={} group={} pop={} Psum={} Gsum={} ".format(
-                    out_json[group]["AA_Ref_South_Asian"],
-                    group,
-                    "AA_Ref_South_Asian",
-                    psum,
-                    gsum))
-            if psum * gsum != 0.0:
-                out_json[group]["AA_Ref_South_Asian"] = (float(
-                    out_json[group]["AA_Ref_South_Asian"]) * gsum) / psum
-            else:
-                out_json[group]["AA_Ref_South_Asian"] = 0.0
-            continue
-
-        # if there is no asian test, just use global for south asians
-        if group == "south_asia" and has_asia == 0:
-            out_json[group]["AA_Ref_South_Asian"] = global_from_json["AA_Ref_South_Asian"]
-            continue
-
-        # if the group is americas, CSA = CSA + (0.5 (CSA+NA)), then NA = (0.5 (CSA+NA)) - CSA
-        if group == "americas":
-            amdenom = out_json[group]["AA_Ref_Central_South_American"] + out_json[group]["AA_Ref_North_American"]
-            out_json[group]["AA_Ref_Central_South_American"] += (0.5 * amdenom)
-            if out_json[group]["AA_Ref_Central_South_American"] >= amdenom:
-                out_json[group]["AA_Ref_Central_South_American"] = amdenom
-            out_json[group]["AA_Ref_North_American"] = amdenom - out_json[group]["AA_Ref_Central_South_American"]
-
-        for gpop in gpops:
-            gsum += float(global_from_json[gpop])
-        psum = sum(out_json[group].values())
-
-        for pop in pops:
-            log.debug("value={} group={} pop={} Psum={} Gsum={} ".format(
-                out_json[group][pop], group, pop, psum, gsum))
-            if psum * gsum != 0.0:
-                out_json[group][pop] = (out_json[group][pop] * gsum) / psum
-            else:
-                out_json[group][pop] = 0.0
-
-    # delete duplicate south asian entry from asian continent
-    del out_json["asia"]["AA_Ref_South_Asian"]
-
-    # move subgroups to first level of JSON, delete super groups
+    #applying some final formatting adjustments to the output and creating true percentages
     final_json = {}
-    for val in out_json.values():
-        for k, v in val.items():
-            new = re.sub("AA_Ref_", "", k)
-            final_json[new] = v
-    # rewieght everything again after the edge cases and dedups are resolved
-    denom = sum(final_json.values())
-    for pop, val in final_json.items():
-        final_json[pop] = (val / denom) * 100
-
-
-    # fix the pop names by removing AA_Ref
+    for key, val in out_json.items():
+        new = re.sub("AA_Ref_", "", key)
+        final_json[new] = val * 100
 
     # make sure the final percentages round out to 100
     # if int() ever changes from rounding down behavior, this will stop working
