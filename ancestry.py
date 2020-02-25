@@ -109,7 +109,7 @@ def subpopadmix(global_admix, test_ped, threads, output):
 # json file produced by subpopadmix
 @click.argument('full_json', type=click.File('r'))
 @click.argument('output', type=click.File('w'), default='-')
-def handleedges(full_json, output):
+def filters(full_json, output):
     full_json = json.load(full_json)
     edged_json = ancestry.admixture.filters(full_json)
     json.dump(edged_json, output, indent=2)
@@ -218,6 +218,10 @@ def full(debug, test_ped, threads, output):
         total_json[pop] = results
 
     json.dump(total_json, output, indent=2)
+
+
+
+
 
 
 @click.group()
