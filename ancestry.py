@@ -169,8 +169,7 @@ def init_global(test_ped, threads, output):
 @click.option('-d', '--debug', is_flag=True, default=False, help='Enables intermediate JSON outputs.')
 @click.argument('test_ped')  # MUST BE INDIVIDUAL VCF FILE
 @click.option('-t', '--threads', default=1)
-@click.argument('output', type=click.File('w'), required=True)
-def full(debug, test_ped, threads, output):
+def full(debug, test_ped, threads):
     """
     The full hierarchical ancestry caller for a given sample VCF. OUTPUT is the prefix
 
@@ -218,10 +217,10 @@ def full(debug, test_ped, threads, output):
         total_json[pop] = results
 
     if debug is True:
-        json.dump(total_json, output + ".subpops.json" , indent=2)
+        json.dump(total_json, open(test_prefix + ".subpops.json", 'w') , indent=2)
 
     final_json = ancestry.admixture.filters(total_json)
-    json.dump(final_json, output + ".final.json", indent=2)
+    json.dump(final_json, open(test_prefix + ".final.json", 'w'), indent=2)
 
 
 @click.group()
