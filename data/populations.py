@@ -136,7 +136,7 @@ POPULATIONS = {
             "AA_Ref_SouthIndianBrahmin",
             "AA_Ref_Velamas",
             "AA_Ref_Kanaya",
-            "AA_Ref_Bengal_Brahmin",
+            "AA_Ref_BengalBrahmin",
             "AA_Ref_GujBrahmin",
             "AA_Ref_Yoruba"
         ],
