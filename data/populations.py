@@ -26,8 +26,7 @@ POPULATIONS = {
             "AA_Ref_SouthAsian",
             "AA_Ref_SouthernEuropean",
             "AA_Ref_Amerindian"
-        ],
-        "k": 7
+        ]
     },
     "africa": {
         "pops": [
@@ -41,8 +40,7 @@ POPULATIONS = {
             "AA_Ref_Mbuti_Pygmies",
             "AA_Ref_Mende",
             "AA_Ref_San"
-        ],
-        "k": 5
+        ]
     },
     "america": {
         "pops": [
@@ -54,8 +52,7 @@ POPULATIONS = {
         "core": [
             "AA_Ref_Pima",
             "AA_Ref_Surui"
-        ],
-        "k": 4
+        ]
     },
     "europe": {
         "pops": [
@@ -88,8 +85,7 @@ POPULATIONS = {
             "AA_Ref_Tuscan",
             "AA_Ref_Yemenese",
             "AA_Ref_YemeniteJews"
-        ],
-        "k": 15
+        ]
     },
     "eastasia": {
         "pops": [
@@ -103,8 +99,7 @@ POPULATIONS = {
             "AA_Ref_Cambodians",
             "AA_Ref_Japanese",
             "AA_Ref_Mongol"
-        ],
-        "k": 5
+        ]
     },
     "southasia": {
         "pops": [
@@ -143,6 +138,7 @@ POPULATIONS = {
             "AA_Ref_Kanaya",
             "AA_Ref_Bengal_Brahmin",
             "AA_Ref_GujBrahmin",
+            "AA_Ref_Yoruba"
         ],
         "core": [
             "AA_Ref_AndamanIsland",
@@ -176,9 +172,8 @@ POPULATIONS = {
             "AA_Ref_SouthIndianBrahmin",
             "AA_Ref_Velamas",
             "AA_Ref_Kanaya",
-            "AA_Ref_Bengal_Brahmin",
+            "AA_Ref_BengalBrahmin",
             "AA_Ref_GujBrahmin",
-        ],
-        "k": 35
+        ]
     }
 }

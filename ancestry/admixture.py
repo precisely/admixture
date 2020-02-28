@@ -117,7 +117,7 @@ def create_reference(poptest_name, global_prefix, sample):
 
     """
     pops = POPULATIONS[poptest_name]["pops"]
-    k = POPULATIONS[poptest_name]["k"]
+    k = len(pops)
 
     with open("keeper.txt", "w") as f:
         for pop in pops:
