@@ -444,11 +444,11 @@ def filters(full_json):
     #Zero'ing out pops that did not trigger their subtest. Also create a total denominator for readjusting nonzerod
     # oceanians get zero'd by this threshold
     global_denom = 0.0
-    if float(full_json["global"]["AA_Ref_Oceanian"]) <= 0.02:
-        out_json["AA_Ref_Oceanian"] = 0.0
+    if float(full_json["global"]["AA_Ref_Papuan"]) <= 0.02:
+        out_json["AA_Ref_Papuan"] = 0.0
     else:
-        out_json["AA_Ref_Oceanian"] = float(full_json["global"]["AA_Ref_Oceanian"])
-        global_denom += float(full_json["global"]["AA_Ref_Oceanian"])
+        out_json["AA_Ref_Papuan"] = float(full_json["global"]["AA_Ref_Papuan"])
+        global_denom += float(full_json["global"]["AA_Ref_Papuan"])
 
     for group, values in gsum_rules.items():
         if group not in full_json.keys():

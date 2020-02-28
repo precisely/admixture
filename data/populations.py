@@ -13,7 +13,7 @@ POPULATIONS = {
             "AA_Ref_African",
             "AA_Ref_EastAsian",
             "AA_Ref_NorthernEuropean",
-            "AA_Ref_Oceanian",
+            "AA_Ref_Papuan",
             "AA_Ref_SouthAsian",
             "AA_Ref_SouthernEuropean",
             "AA_Ref_Amerindian"
@@ -22,7 +22,7 @@ POPULATIONS = {
             "AA_Ref_African",
             "AA_Ref_EastAsian",
             "AA_Ref_NorthernEuropean",
-            "AA_Ref_Oceanian",
+            "AA_Ref_Papuan",
             "AA_Ref_SouthAsian",
             "AA_Ref_SouthernEuropean",
             "AA_Ref_Amerindian"
